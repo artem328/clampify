@@ -1,0 +1,26 @@
+{
+  "name": "clampify",
+  "description": "Trims multi line text and adds ellipsis in the end of it",
+  "main": "clampify.js",
+  "authors": [
+    "Artem Vozhzhov <vojjov.artem@ya.ru>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "truncate",
+    "multi",
+    "line",
+    "string",
+    "line",
+    "clamp",
+    "ellipsis"
+  ],
+  "homepage": "https://github.com/artem328/clampify.git",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
