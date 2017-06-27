@@ -66,8 +66,9 @@ $('#demo').clampify({
 
 Option | Type | Default | Description
 ------ | ---- | ------- | -----------
-`endsWith` | `string`, `Node` | `'\u2026'` | Symbol or Node that truncated text should be ended with. Displays only if text was truncated
-`endsWithClass` | `string` | `'clampify-end'` | Class of endsWithSymbol wrapper (uses if `endsWith` option is a string)
+`maxLines` | `integer` | `0` | Number of max lines. If value is less than 1, then height of element will be used for limiting text
+`endsWith` | `string`, `Node` | `'\u2026'` | Text or Node that truncated text should be ended with. Displays only if text was truncated
+`endsWithClass` | `string` | `'clampify-end'` | Class of endsWith text wrapper (uses if `endsWith` option is a string)
 `removeEndChars` | `RegExp` | `/[.,?!\/\\:\-\s]+$/` | Regular expression for remove trailing symbols, must ends with `$` for correct trimming
 `autoUpdate` | `boolean` | `false` | If set to true element text will be retruncated after window resize
 

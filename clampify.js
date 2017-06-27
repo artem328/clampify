@@ -69,29 +69,39 @@
             return _id;
         };
 
-        this.element = element;
-        this.element.clampify = this;
-        this.originalContent = element.innerHTML;
+        this._element = element;
+        this._element.clampify = this;
+        this._originalContent = element.innerHTML;
+
+        this._testNode = document.createElement('span');
+        this._testNode.appendChild(document.createTextNode('\u00a0'));
 
         var endsWith = options.endsWith || '\u2026',
-            endsWithClass = options.endsWithClass || 'clampify-end';
+            endsWithClass = options.endsWithClass || 'clampify-end',
+            maxLines = parseInt(options.maxLines);
 
-        this.removeEndChars = options.removeEndChars || /[.,?!\/\\:\-\s]+$/;
+        this._removeEndChars = options._removeEndChars || /[.,?!\/\\:\-\s]+$/;
+        this._maxLines = !isNaN(maxLines) ? maxLines : 0;
+
+        this._styles = {
+            overflowY: this._element.style.overflowY,
+            maxHeight: this._element.style.maxHeight
+        };
 
         this._updateLimit();
 
         if (endsWith instanceof Node) {
-            this.endsWithNode = endsWith.cloneNode(true);
+            this._endsWithNode = endsWith.cloneNode(true);
         } else {
-            this.endsWithNode = document.createElement('span');
-            this.endsWithNode.className = endsWithClass;
-            this.endsWithNode.appendChild(document.createTextNode(endsWith));
+            this._endsWithNode = document.createElement('span');
+            this._endsWithNode.className = endsWithClass;
+            this._endsWithNode.appendChild(document.createTextNode(endsWith));
         }
 
-        this.innerWrapper = document.createElement('span');
-        this.outerWrapper = document.createElement('span');
+        this._innerWrapper = document.createElement('span');
+        this._outerWrapper = document.createElement('span');
 
-        this.outerWrapper.appendChild(this.innerWrapper);
+        this._outerWrapper.appendChild(this._innerWrapper);
 
         if (options.autoUpdate) {
             this.enableAutoUpdate();
@@ -114,7 +124,21 @@
      * @private
      */
     Clampify.prototype._updateLimit = function () {
-        this.limit = this.element.offsetHeight || this.element.clientHeight;
+        if (this._maxLines > 0) {
+            this._element.innerHTML = '';
+            this._element.appendChild(this._testNode);
+
+            var elementHeight = this._element.offsetHeight || this._element.clientHeight,
+                testNodeHeight = this._testNode.offsetHeight;
+
+            this._limit = Math.max(elementHeight, testNodeHeight) * this._maxLines;
+
+            this.resetContent();
+
+            this._setElementInlineStyles();
+        } else {
+            this._limit = this._element.offsetHeight || this._element.clientHeight;
+        }
     };
 
     /**
@@ -125,7 +149,17 @@
      * @private
      */
     Clampify.prototype._isOverLimited = function () {
-        return this.outerWrapper.offsetHeight > this.limit;
+        return this._outerWrapper.offsetHeight > this._limit;
+    };
+
+    Clampify.prototype._setElementInlineStyles = function () {
+        this._element.style.overflowY = 'hidden';
+        this._element.style.maxHeight = this._limit + 'px';
+    };
+
+    Clampify.prototype._unsetElementInlineStyles = function () {
+        this._element.style.overflowY = this._styles.overflowY;
+        this._element.style.maxHeight = this._styles.maxHeight;
     };
 
     /**
@@ -135,9 +169,9 @@
      * @private
      */
     Clampify.prototype._wrap = function () {
-        this.innerWrapper.innerHTML = this.element.innerHTML;
-        this.element.innerHTML = '';
-        this.element.appendChild(this.outerWrapper);
+        this._innerWrapper.innerHTML = this._element.innerHTML;
+        this._element.innerHTML = '';
+        this._element.appendChild(this._outerWrapper);
     };
 
     /**
@@ -146,7 +180,7 @@
      * @private
      */
     Clampify.prototype._unwrap = function () {
-        this.element.innerHTML = this.innerWrapper.innerHTML;
+        this._element.innerHTML = this._innerWrapper.innerHTML;
     };
 
     /**
@@ -156,8 +190,8 @@
      * @private
      */
     Clampify.prototype._addEndsWithNode = function (to) {
-        to = to || this.outerWrapper;
-        to.appendChild(this.endsWithNode);
+        to = to || this._outerWrapper;
+        to.appendChild(this._endsWithNode);
     };
 
     /**
@@ -167,8 +201,8 @@
      * @private
      */
     Clampify.prototype._removeEndsWithNode = function (from) {
-        from = from || this.outerWrapper;
-        from.removeChild(this.endsWithNode);
+        from = from || this._outerWrapper;
+        from.removeChild(this._endsWithNode);
     };
 
     /**
@@ -180,7 +214,7 @@
      * @private
      */
     Clampify.prototype._joinWords = function (words) {
-        return words.join(' ').replace(this.removeEndChars, '');
+        return words.join(' ').replace(this._removeEndChars, '');
     };
 
     /**
@@ -190,7 +224,7 @@
      * @private
      */
     Clampify.prototype._calculate = function (node) {
-        node = node || this.innerWrapper;
+        node = node || this._innerWrapper;
 
         if (node instanceof Text) {
             var words = node.textContent.split(' ');
@@ -239,7 +273,7 @@
      * Resets initial content of element
      */
     Clampify.prototype.resetContent = function () {
-        this.element.innerHTML = this.originalContent;
+        this._element.innerHTML = this._originalContent;
     };
 
     /**
@@ -255,7 +289,7 @@
             this._addEndsWithNode();
             this._calculate();
             this._removeEndsWithNode();
-            this._addEndsWithNode(this.innerWrapper);
+            this._addEndsWithNode(this._innerWrapper);
         }
 
         this._unwrap();
@@ -297,7 +331,8 @@
     Clampify.prototype.destroy = function () {
         this.disableAutoUpdate();
         this.resetContent();
-        delete this.element.clampify;
+        this._unsetElementInlineStyles();
+        delete this._element.clampify;
     };
 
     root.addEventListener('resize', function () {
@@ -319,7 +354,7 @@
     if (typeof root.jQuery !== 'undefined') {
         var $ = root.jQuery;
         $.fn.clampify = function (options) {
-            return $(this).each(function() {
+            return $(this).each(function () {
                 if (typeof options === 'string') {
                     if (options.indexOf('_') === -1 && this.clampify instanceof Clampify) {
                         if (typeof this.clampify[options] === 'function') {
