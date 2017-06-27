@@ -43,6 +43,7 @@ Let's say we have such html layout. Supposed that container is block element and
 ```
 
 We can initialize clampify using vanilla js
+
 ```javascript
 var element = document.getElementById('demo');
 $clampify(element, {
@@ -58,6 +59,9 @@ or via jQuery
 $('#demo').clampify({
     // options
 });
+
+// You can also call methods of Clampify instance via jQuery
+// $('#demo').clampify('resetContent')
 ```
 
 `Clampify` class instance is stored in element property `clampify`
@@ -66,25 +70,75 @@ $('#demo').clampify({
 
 Option | Type | Default | Description
 ------ | ---- | ------- | -----------
-`maxLines` | `integer` | `0` | Number of max lines. If value is less than 1, then height of element will be used for limiting text
+`maxLines` | `int` | `0` | Number of max lines. If value is less than 1, then height of element will be used for limiting text
 `endsWith` | `string`, `Node` | `'\u2026'` | Text or Node that truncated text should be ended with. Displays only if text was truncated
 `endsWithClass` | `string` | `'clampify-end'` | Class of endsWith text wrapper (uses if `endsWith` option is a string)
 `removeEndChars` | `RegExp` | `/[.,?!\/\\:\-\s]+$/` | Regular expression for remove trailing symbols, must ends with `$` for correct trimming
 `autoUpdate` | `boolean` | `false` | If set to true element text will be retruncated after window resize
 
 ### Methods
-Method | Returns | Description
------- | ------- | -----------
-`resetContent()` | `void` | Resets initial content of element
-`truncate()` | `void` | Truncates element's content to fit block height
-`destroy()` | `void` | Resets initial content, disables auto update on window resize and removes link to current instance from element
-`enableAutoUpdate()` | `void` | Enables auto truncation on window resize
-`disableAutoUpdate()` | `void` | Disables auto truncation on window resize
 
-You can call this method via jQuery just passing method name instead of options object to `.clampify()` method. 
+#### getId()
+Returns Id of current instance
+
+Returns: `int`
+
+#### resetContent()
+Resets initial content of element
+
+Returns: `void`
+
+#### truncate()
+Truncates element's content if it fill more than space available
+
+Returns: `void`
+
+#### destroy()
+Resets initial content, disables auto update on window resize and removes link to current instance from element
+
+Returns: `void`
+
+#### enableAutoUpdate()
+Enables auto truncation on window resizing
+
+Returns: `void`
+
+#### disableAutoUpdate()
+Disables auto truncation on window resizing
+
+Returns: `void`
+
+#### setMaxLines(maxLines)
+Sets max lines option to the current instance
+
+Returns: `void`
+
+Argument | Type | Default | Description
+-------- | ---- | ------- | -----------
+`maxLines` | `int` | `0` | Number of lines
+
+#### getMaxLines()
+Gets max lines option of current instance
+
+Returns `int`
+
+### jQuery Usage
+You can call methods via jQuery just passing method name instead of options object to `.clampify()` method.
 For example:
 ```javascript
 $('#demo').clampify('resetContent');
+```
+or
+```javascript
+$('#demo').clampify('setMaxLines', 3);
+```
+
+**NOTE**: Using of methods that returns non-void values via jQuery is useless, because jQuery instance will be returned anyways.
+For getting data you can use `clampify` property of DOM element.
+
+For example:
+```javascript
+var maxLines = $('#demo').get(0).clampify.getMaxLines();
 ```
 
 ### Auto Updating

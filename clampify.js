@@ -77,11 +77,10 @@
         this._testNode.appendChild(document.createTextNode('\u00a0'));
 
         var endsWith = options.endsWith || '\u2026',
-            endsWithClass = options.endsWithClass || 'clampify-end',
-            maxLines = parseInt(options.maxLines);
+            endsWithClass = options.endsWithClass || 'clampify-end';
 
         this._removeEndChars = options._removeEndChars || /[.,?!\/\\:\-\s]+$/;
-        this._maxLines = !isNaN(maxLines) ? maxLines : 0;
+        this.setMaxLines(options.maxLines);
 
         this._styles = {
             overflowY: this._element.style.overflowY,
@@ -152,11 +151,22 @@
         return this._outerWrapper.offsetHeight > this._limit;
     };
 
+    /**
+     * Sets styles to element for limiting
+     * its content with desired number of rows
+     *
+     * @private
+     */
     Clampify.prototype._setElementInlineStyles = function () {
         this._element.style.overflowY = 'hidden';
         this._element.style.maxHeight = this._limit + 'px';
     };
 
+    /**
+     * Restore element's changed styles
+     *
+     * @private
+     */
     Clampify.prototype._unsetElementInlineStyles = function () {
         this._element.style.overflowY = this._styles.overflowY;
         this._element.style.maxHeight = this._styles.maxHeight;
@@ -270,6 +280,25 @@
     };
 
     /**
+     * Sets max lines option to the current instance
+     *
+     * @param {int} maxLines Number of max lines to be displayed
+     */
+    Clampify.prototype.setMaxLines = function (maxLines) {
+        maxLines = parseInt(maxLines);
+        this._maxLines = !isNaN(maxLines) ? maxLines : 0;
+    };
+
+    /**
+     * Gets max lines option of current instance
+     *
+     * @return {int} Number of max lines option currently set
+     */
+    Clampify.prototype.getMaxLines = function () {
+        return this._maxLines;
+    };
+
+    /**
      * Resets initial content of element
      */
     Clampify.prototype.resetContent = function () {
@@ -352,13 +381,20 @@
     };
 
     if (typeof root.jQuery !== 'undefined') {
-        var $ = root.jQuery;
+        var $ = root.jQuery,
+            allowedMethods = [
+                'getId', 'resetContent', 'truncate',
+                'destroy', 'enableAutoUpdate', 'disableAutoUpdate',
+                'setMaxLines', 'getMaxLines'
+            ];
         $.fn.clampify = function (options) {
+            var args = Array.prototype.slice.apply(arguments);
+            args.shift();
             return $(this).each(function () {
                 if (typeof options === 'string') {
-                    if (options.indexOf('_') === -1 && this.clampify instanceof Clampify) {
+                    if (allowedMethods.indexOf(options) > -1 && this.clampify instanceof Clampify) {
                         if (typeof this.clampify[options] === 'function') {
-                            this.clampify[options].apply(this.clampify);
+                            this.clampify[options].apply(this.clampify, args);
                         }
                         return $(this);
                     }
@@ -366,6 +402,7 @@
                     options = {};
                 }
 
+                // Reinitialization
                 if (this.clampify instanceof Clampify) {
                     this.clampify.destroy();
                 }
