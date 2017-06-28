@@ -75,11 +75,12 @@ Option | Type | Default | Description
 `endsWithClass` | `string` | `'clampify-end'` | Class of endsWith text wrapper (uses if `endsWith` option is a string)
 `removeEndChars` | `RegExp` | `/[.,?!\/\\:\-\s]+$/` | Regular expression for remove trailing symbols, must ends with `$` for correct trimming
 `autoUpdate` | `boolean` | `false` | If set to true element text will be retruncated after window resize
+`hideOverflowY` | `boolean` | `true` | If set to true `overflow-y: hidden` will be automatically added to element's styles
 
 ### Methods
 
 #### getId()
-Returns Id of current instance
+Returns id of current instance
 
 Returns: `int`
 
