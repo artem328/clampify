@@ -1,6 +1,6 @@
 {
   "name": "clampify",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Trims multi line text and adds ellipsis in the end of it",
   "main": "clampify.js",
   "scripts": {
