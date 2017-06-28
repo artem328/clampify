@@ -1,5 +1,5 @@
 /*!
- * Clampify v1.1.0
+ * Clampify v1.1.1
  *
  * Copyright (c) 2016 Artem Vozhzhov <vojjov.artem@ya.ru>
  *
@@ -79,7 +79,8 @@
         var endsWith = options.endsWith || '\u2026',
             endsWithClass = options.endsWithClass || 'clampify-end';
 
-        this._removeEndChars = options._removeEndChars || /[.,?!\/\\:\-\s]+$/;
+        this._removeEndChars = options.removeEndChars || /[.,?!\/\\:\-\s]+$/;
+        this._hideOverflowY = options.hideOverflowY !== false;
         this.setMaxLines(options.maxLines);
 
         this._styles = {
@@ -158,7 +159,9 @@
      * @private
      */
     Clampify.prototype._setElementInlineStyles = function () {
-        this._element.style.overflowY = 'hidden';
+        if (this._hideOverflowY) {
+            this._element.style.overflowY = 'hidden';
+        }
         this._element.style.maxHeight = this._limit + 'px';
     };
 
