@@ -1,7 +1,7 @@
 /*!
- * Clampify v1.1.1
+ * Clampify v1.1.2
  *
- * Copyright (c) 2016 Artem Vozhzhov <vojjov.artem@ya.ru>
+ * Copyright (c) 2017 Artem Vozhzhov <vojjov.artem@ya.ru>
  *
  * Licenced under the MIT licence.
  */
@@ -73,9 +73,6 @@
         this._element.clampify = this;
         this._originalContent = element.innerHTML;
 
-        this._testNode = document.createElement('span');
-        this._testNode.appendChild(document.createTextNode('\u00a0'));
-
         var endsWith = options.endsWith || '\u2026',
             endsWithClass = options.endsWithClass || 'clampify-end';
 
@@ -125,11 +122,14 @@
      */
     Clampify.prototype._updateLimit = function () {
         if (this._maxLines > 0) {
+            var testNode = document.createElement('span');
+            testNode.appendChild(document.createTextNode('\u00a0'));
+
             this._element.innerHTML = '';
-            this._element.appendChild(this._testNode);
+            this._element.appendChild(testNode);
 
             var elementHeight = this._element.offsetHeight || this._element.clientHeight,
-                testNodeHeight = this._testNode.offsetHeight;
+                testNodeHeight = testNode.offsetHeight;
 
             this._limit = Math.max(elementHeight, testNodeHeight) * this._maxLines;
 
@@ -193,6 +193,7 @@
      * @private
      */
     Clampify.prototype._unwrap = function () {
+        this._element.removeChild(this._outerWrapper);
         this._element.innerHTML = this._innerWrapper.innerHTML;
     };
 
@@ -204,7 +205,8 @@
      */
     Clampify.prototype._addEndsWithNode = function (to) {
         to = to || this._outerWrapper;
-        to.appendChild(this._endsWithNode);
+        this._endsWithNodeClone = this._endsWithNode.cloneNode(true);
+        to.appendChild(this._endsWithNodeClone);
     };
 
     /**
@@ -215,7 +217,8 @@
      */
     Clampify.prototype._removeEndsWithNode = function (from) {
         from = from || this._outerWrapper;
-        from.removeChild(this._endsWithNode);
+        from.removeChild(this._endsWithNodeClone);
+        this._endsWithNodeClone = null;
     };
 
     /**
@@ -250,14 +253,15 @@
             }
 
             if (!node.textContent) {
-                var prev;
+                var prev, parent;
 
                 if (node.previousSibling) {
                     prev = node.previousSibling;
                     node.parentNode.removeChild(node);
                 } else {
                     prev = node.parentNode.previousSibling;
-                    node.parentNode.parentNode.removeChild(node.parentNode);
+                    parent = node.parentNode;
+                    parent.parentNode.removeChild(parent);
                 }
 
                 this._calculate(prev);
