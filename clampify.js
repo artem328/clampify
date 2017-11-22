@@ -253,14 +253,15 @@
             }
 
             if (!node.textContent) {
-                var prev;
+                var prev, parent;
 
                 if (node.previousSibling) {
                     prev = node.previousSibling;
                     node.parentNode.removeChild(node);
                 } else {
                     prev = node.parentNode.previousSibling;
-                    node.parentNode.parentNode.removeChild(node.parentNode);
+                    parent = node.parentNode;
+                    parent.parentNode.removeChild(parent);
                 }
 
                 this._calculate(prev);
