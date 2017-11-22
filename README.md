@@ -24,7 +24,7 @@ Let's say we have such html layout. Supposed that container is block element and
         margin: auto;
         line-height: 1.2em;
         /* 
-         * Allows to display maximum 3 lines
+         * Allows to display maximum 5 lines
          * 1.2em * 5
          */
         max-height: 6em;
