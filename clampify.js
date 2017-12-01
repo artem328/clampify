@@ -77,7 +77,9 @@
             endsWithClass = options.endsWithClass || 'clampify-end';
 
         this._removeEndChars = options.removeEndChars || /[.,?!\/\\:\-\s]+$/;
-        this._hideOverflowY = options.hideOverflowY !== false;
+        this._hideOverflowY = !!options.hideOverflowY;
+        this._appendToLastElement = !!options.appendToLastElement;
+        this._lastElementDeepAppend = !!options.lastElementDeepAppend;
         this.setMaxLines(options.maxLines);
 
         this._styles = {
@@ -200,25 +202,61 @@
     /**
      * Adds node with end text to element
      *
-     * @param {HTMLElement} to
+     * @param {Node} to
      * @private
      */
     Clampify.prototype._addEndsWithNode = function (to) {
-        to = to || this._outerWrapper;
         this._endsWithNodeClone = this._endsWithNode.cloneNode(true);
+        this._endsWithNodeHolder = to;
         to.appendChild(this._endsWithNodeClone);
     };
 
     /**
      * Removes node with end text from element
      *
-     * @param {HTMLElement} from
      * @private
      */
-    Clampify.prototype._removeEndsWithNode = function (from) {
-        from = from || this._outerWrapper;
-        from.removeChild(this._endsWithNodeClone);
+    Clampify.prototype._removeEndsWithNode = function () {
+        if (this._endsWithNodeHolder && this._endsWithNodeClone) {
+            this._endsWithNodeHolder.removeChild(this._endsWithNodeClone);
+        }
+        this._resetEndsWithNodeCloneAndHolder();
+    };
+
+    /**
+     *
+     * @private
+     */
+    Clampify.prototype._resetEndsWithNodeCloneAndHolder = function () {
         this._endsWithNodeClone = null;
+        this._endsWithNodeHolder = null;
+    };
+
+    /**
+     *
+     * @param {Node} node
+     * @private
+     */
+    Clampify.prototype._addEndsWithNodeToEnd = function (node) {
+        this._removeEndsWithNode();
+
+        if (this._appendToLastElement) {
+            if (Node.TEXT_NODE === node.nodeType) {
+                this._addEndsWithNode(node.parentNode);
+            } else {
+                if (this._lastElementDeepAppend) {
+                    var _node = node;
+                    while (Node.ELEMENT_NODE === _node.lastChild.nodeType) {
+                        _node = _node.lastChild;
+                    }
+                    this._addEndsWithNode(_node);
+                } else {
+                    this._addEndsWithNode(node);
+                }
+            }
+        } else {
+            this._addEndsWithNode(this._innerWrapper);
+        }
     };
 
     /**
@@ -242,15 +280,20 @@
     Clampify.prototype._calculate = function (node) {
         node = node || this._innerWrapper;
 
-        if (node instanceof Text) {
+        if (Node.TEXT_NODE === node.nodeType) {
             var words = node.textContent.split(' ');
 
             node.textContent = this._joinWords(words);
+            this._addEndsWithNodeToEnd(node);
 
             while (this._isOverLimited() && words.length > 0) {
+                this._removeEndsWithNode();
                 words.pop();
                 node.textContent = this._joinWords(words);
+                this._addEndsWithNodeToEnd(node);
             }
+
+            this._removeEndsWithNode();
 
             if (!node.textContent) {
                 var prev, parent;
@@ -276,7 +319,11 @@
 
                 node.appendChild(childNode);
 
+                this._addEndsWithNodeToEnd(childNode);
+
                 isOverLimited = this._isOverLimited();
+
+                this._removeEndsWithNode();
 
                 if (isOverLimited) {
                     this._calculate(childNode);
@@ -320,12 +367,11 @@
         this.resetContent();
         this._updateLimit();
         this._wrap();
+        this._resetEndsWithNodeCloneAndHolder();
 
         if (this._isOverLimited()) {
-            this._addEndsWithNode();
             this._calculate();
-            this._removeEndsWithNode();
-            this._addEndsWithNode(this._innerWrapper);
+            this._addEndsWithNodeToEnd(this._innerWrapper.lastChild, this._innerWrapper);
         }
 
         this._unwrap();
