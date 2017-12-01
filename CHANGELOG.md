@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+### Added
+- Added `appendToLastElement`
+- Added `lastElementDeepAppend` option
+
+
 ## v1.1.2 - 2017-11-22
 ### Fixed
 - Fixed appearance bug in IE 11 ([#1](https://github.com/artem328/clampify/issues/1))

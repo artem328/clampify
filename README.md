@@ -76,6 +76,8 @@ Option | Type | Default | Description
 `removeEndChars` | `RegExp` | `/[.,?!\/\\:\-\s]+$/` | Regular expression for remove trailing symbols, must ends with `$` for correct trimming
 `autoUpdate` | `boolean` | `false` | If set to true element text will be retruncated after window resize
 `hideOverflowY` | `boolean` | `true` | If set to true `overflow-y: hidden` will be automatically added to element's styles
+`appendToLastElement` | `boolean` | `false` | If set to true, end element will be appended to last child of element (if possible)
+`lastElementDeepAppend` | `boolean` | `false` | If set to true, will lookup for deepest html element in last child element, and append end text in there. Works only with `appendToLastElement` option
 
 ### Methods
 
