@@ -41,17 +41,26 @@
      *
      * @param {HTMLElement} element
      * @param {object} options {
-     *  @type {Node|string} endsWith  Node or text that will be appended
-     *                                to the end of truncated content
-     *                                Default: '\u2026'
-     *  @type {string} endsWithClass  Class of end text
-     *                                (applied only if string passed in endsWith option)
-     *                                Default: 'clampify-end'
+     *  @type {Node|string} endsWith Node or text that will be appended
+     *                               to the end of truncated content
+     *                               Default: '\u2026'
+     *  @type {string} endsWithClass Class of end text
+     *                               (applied only if string passed in endsWith option)
+     *                               Default: 'clampify-end'
      *  @type {RegExp} removeEndChars RegExp for removing end chars
      *                                in the end of truncated string
      *                                Default: /[.,?!\/\\:\-\s]+$/
-     *  @type {boolean} autoUpdate    Should this instance auto truncate on window resize
-     *                                Default: false
+     *  @type {boolean} autoUpdate Should this instance auto truncate on window resize
+     *                             Default: false
+     *  @type {boolean} hideOverflowY Should this instance element have 'overflow-y: hidden' css style
+     *                                Default: true
+     *  @type {boolean} appendToLastElement If set to true, end element will be appended
+     *                                      to last child of element (if possible)
+     *                                      Default: false
+     *  @type {boolean} lastElementDeepAppend If set to true, will lookup for deepest html element
+     *                                        in last child element, and append end text in there
+     *                                        Works only with appendToLastElement option
+     *                                        Default: false
      * }
      * @constructor
      */
@@ -77,7 +86,7 @@
             endsWithClass = options.endsWithClass || 'clampify-end';
 
         this._removeEndChars = options.removeEndChars || /[.,?!\/\\:\-\s]+$/;
-        this._hideOverflowY = !!options.hideOverflowY;
+        this._hideOverflowY = options.hasOwnProperty('hideOverflowY') ? !!options.hideOverflowY : true;
         this._appendToLastElement = !!options.appendToLastElement;
         this._lastElementDeepAppend = !!options.lastElementDeepAppend;
         this.setMaxLines(options.maxLines);
