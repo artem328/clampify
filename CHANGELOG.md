@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.2.1 - 2017-12-05
 ### Fixed
 - Error when deep append to empty element
 

@@ -1,5 +1,5 @@
 /*!
- * Clampify v1.2.0
+ * Clampify v1.2.1
  *
  * Copyright (c) 2017 Artem Vozhzhov <vojjov.artem@ya.ru>
  *
