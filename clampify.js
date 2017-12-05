@@ -1,5 +1,5 @@
 /*!
- * Clampify v1.2.0
+ * Clampify v1.2.1
  *
  * Copyright (c) 2017 Artem Vozhzhov <vojjov.artem@ya.ru>
  *
@@ -255,7 +255,7 @@
             } else {
                 if (this._lastElementDeepAppend) {
                     var _node = node;
-                    while (Node.ELEMENT_NODE === _node.lastChild.nodeType) {
+                    while (_node.childNodes.length > 0 && Node.ELEMENT_NODE === _node.lastChild.nodeType) {
                         _node = _node.lastChild;
                     }
                     this._addEndsWithNode(_node);
