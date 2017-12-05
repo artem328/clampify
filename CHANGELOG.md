@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+### Fixed
+- Error when deep append to empty element
+
+
 ## v1.2.0 - 2017-12-01
 ### Added
 - Added `appendToLastElement`
