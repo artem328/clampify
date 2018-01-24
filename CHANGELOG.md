@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+### Deleted
+- Removed second argument from `_addEndsWithNodeToEnd` call ([#2](https://github.com/artem328/clampify/issues/2))
+
+
 ## v1.2.1 - 2017-12-05
 ### Fixed
 - Error when deep append to empty element

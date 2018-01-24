@@ -380,7 +380,7 @@
 
         if (this._isOverLimited()) {
             this._calculate();
-            this._addEndsWithNodeToEnd(this._innerWrapper.lastChild, this._innerWrapper);
+            this._addEndsWithNodeToEnd(this._innerWrapper.lastChild);
         }
 
         this._unwrap();
